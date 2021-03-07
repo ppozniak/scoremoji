@@ -1,3 +1,5 @@
-require("dotenv").config();
+import bot from './bot';
+import { config as setupEnv } from 'dotenv';
+setupEnv();
 
-console.log("Hello world");
+bot.start();
