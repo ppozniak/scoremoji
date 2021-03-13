@@ -12,7 +12,6 @@ client.on('message', (message) => {
     const parts = message.content.split(' ');
     const command = parts[1];
     const args = parts.slice(2);
-    console.log(command, args);
 
     if (commands[command]) {
       commands[command].handler(args, message, client);

@@ -1,8 +1,9 @@
 import { NormalizedCommands } from './index.types';
 
 import help from './help';
+import setScores from './set-scores';
 
-const commandsList = [help];
+const commandsList = [help, setScores];
 
 const commands = commandsList.reduce(
   (commandsObject: NormalizedCommands, { command, ...rest }) => {
