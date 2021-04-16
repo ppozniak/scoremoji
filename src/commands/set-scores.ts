@@ -1,11 +1,12 @@
 import { chunk } from 'lodash';
+import { clearArgs, ADMIN_ONLY_MESSAGE } from '../utils';
 
 import { Command } from './index.types';
 
-type EmojiScorePair = [string, number];
+type EmojiScorePair = Map<string, number>;
 
 // @TODO: Probably use some real DB or cache or whatever
-export let savedScores: EmojiScorePair[] = [];
+export let savedScores: EmojiScorePair = new Map([]);
 
 const EMOJI_REGEX = /\p{Emoji}/u;
 
@@ -14,7 +15,7 @@ const setScoresCommand: Command = {
   description: 'Attach points to certain emojis',
   handler: (args, message) => {
     if (message.member?.hasPermission(['ADMINISTRATOR'])) {
-      const clearedArgs = args.filter(Boolean).map((arg) => arg.trim());
+      const clearedArgs = clearArgs(args);
       if (clearedArgs.length % 2 !== 0)
         return message.reply(
           'Invalid number of arguments, please check your emoji score mapping.'
@@ -39,21 +40,26 @@ const setScoresCommand: Command = {
           );
       }
 
-      const emojiScorePair: EmojiScorePair[] = pairedArgs.map(
-        ([emoji, score]) => [emoji, parseFloat(score)]
-      );
+      const emojiScorePair: [
+        string,
+        number
+      ][] = pairedArgs.map(([emoji, score]) => [emoji, parseFloat(score)]);
 
-      savedScores = emojiScorePair;
+      savedScores = new Map(emojiScorePair);
+      // @TODO:
+      // const cleanedCustomEmoji = emoji.includes('<:')
+      // ? emoji.replace('<:', '').replace('>', '').split(':')[1]
+      // : emoji;
 
       return message.channel.send(
         'Successfully saved emoji-scores\n'.concat(
-          savedScores
+          emojiScorePair
             .map(([emoji, score]) => `${emoji} - ${score} points`)
             .join('\n')
         )
       );
     } else {
-      message.reply('Only administrators may use this command, sorry.');
+      message.reply(ADMIN_ONLY_MESSAGE);
     }
   },
 };
