@@ -31,9 +31,8 @@ const getScoresCommand: Command = {
               const score = savedScores.get(reaction);
               const username = messageReaction.message.author.username;
 
-              // @TODO: Custom emojis are not working
               // @TODO: Not sure if reactions are cached, test it out.
-              console.log(savedScores.keys(), reaction);
+              // @TODO: Deal with channels with more than 100 messages
 
               if (score) {
                 scoreMapping[username]
@@ -55,8 +54,8 @@ const getScoresCommand: Command = {
           message.channel.send(
             [
               '```',
-              `Scoremojis for #${channel.name}:`,
-              '------------------------------',
+              `Scoremojis for #${channel.name} (last ${messages.size}/100 messages):`,
+              '----------------------------------------------',
               scoreTable,
               '',
               `Total score: ${channelScore}`,

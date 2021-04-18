@@ -40,20 +40,21 @@ const setScoresCommand: Command = {
           );
       }
 
-      const emojiScorePair: [
-        string,
-        number
-      ][] = pairedArgs.map(([emoji, score]) => [emoji, parseFloat(score)]);
+      const emojiScorePair: [string, number][] = pairedArgs.map(
+        ([emoji, score]) => {
+          const cleanedCustomEmoji = emoji.includes('<:')
+            ? emoji.replace('<:', '').replace('>', '').split(':')[1]
+            : emoji;
+
+          return [cleanedCustomEmoji, parseFloat(score)];
+        }
+      );
 
       savedScores = new Map(emojiScorePair);
-      // @TODO:
-      // const cleanedCustomEmoji = emoji.includes('<:')
-      // ? emoji.replace('<:', '').replace('>', '').split(':')[1]
-      // : emoji;
 
       return message.channel.send(
         'Successfully saved emoji-scores\n'.concat(
-          emojiScorePair
+          pairedArgs
             .map(([emoji, score]) => `${emoji} - ${score} points`)
             .join('\n')
         )
