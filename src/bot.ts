@@ -24,8 +24,8 @@ client.on('message', (message) => {
 const bot = {
   start(): void {
     if (!process.env.BOT_PREFIX || !process.env.BOT_TOKEN) {
-      console.error('Crucial env variables not provided!');
-      return client.destroy();
+      client.destroy();
+      throw new Error('Crucial env variables not provided!');
     }
     client.login(process.env.BOT_TOKEN);
   },
