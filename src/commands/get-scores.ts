@@ -1,5 +1,5 @@
 import { uniq } from 'lodash';
-import { ADMIN_ONLY_MESSAGE } from '../utils';
+import { ADMIN_ONLY_MESSAGE, fetchAllMessages } from '../utils';
 import { Command } from './index.types';
 import { savedScores } from './set-scores'; // @TODO: naturally use DB for that...
 
@@ -12,7 +12,7 @@ const getScoresCommand: Command = {
 
       if (!channels.length)
         return message.reply(
-          'You have to mention channels you want to get score from.'
+          'You have to mention channels you want to get scores from.'
         );
 
       if (!savedScores.size)
@@ -20,7 +20,8 @@ const getScoresCommand: Command = {
 
       channels.forEach(async ([, channel]) => {
         try {
-          const messages = await channel.messages.fetch({ limit: 100 });
+          const messages = await fetchAllMessages(channel);
+          console.log(messages.length);
           const messagesReactions = messages.map(
             (message) => message.reactions.cache
           );
@@ -32,7 +33,6 @@ const getScoresCommand: Command = {
               const username = messageReaction.message.author.username;
 
               // @TODO: Not sure if reactions are cached, test it out.
-              // @TODO: Deal with channels with more than 100 messages
 
               if (score) {
                 scoreMapping[username]
@@ -54,7 +54,7 @@ const getScoresCommand: Command = {
           message.channel.send(
             [
               '```',
-              `Scoremojis for #${channel.name} (last ${messages.size}/100 messages):`,
+              `Scoremojis for #${channel.name} (${messages.length} messages):`,
               '----------------------------------------------',
               scoreTable,
               '',
