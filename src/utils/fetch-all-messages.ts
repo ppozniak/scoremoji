@@ -18,10 +18,6 @@ export const fetchAllMessages = async (
     iterationMessageCount = messages.size;
     allMessages = [...allMessages, ...Array.from(messages.values())];
     lastId = messages.lastKey();
-
-    console.log(iterationMessageCount);
-    console.log(allMessages.length);
-    console.log(lastId);
   } while (iterationMessageCount >= MESSAGES_PER_FETCH);
 
   return allMessages;

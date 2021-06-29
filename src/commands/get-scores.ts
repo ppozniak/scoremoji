@@ -21,7 +21,6 @@ const getScoresCommand: Command = {
       channels.forEach(async ([, channel]) => {
         try {
           const messages = await fetchAllMessages(channel);
-          console.log(messages.length);
           const messagesReactions = messages.map(
             (message) => message.reactions.cache
           );
@@ -43,7 +42,10 @@ const getScoresCommand: Command = {
           });
 
           const scoreTable = Object.entries(scoreMapping)
-            .sort(([, a], [, b]) => a + b)
+            .sort(([, a], [, b]) => {
+              return a - b;
+            })
+            .reverse()
             .map(([user, score]) => `${user} - ${score} points`)
             .join('\n');
 
