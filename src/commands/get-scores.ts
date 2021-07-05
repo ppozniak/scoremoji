@@ -45,7 +45,7 @@ const getScoresCommand: Command = {
             return message.channel.send(
               `There are no messages with any of the set reactions (${Array.from(
                 savedScores.keys()
-              ).join(', ')}) on channel #${channel}`
+              ).join(', ')}) on channel ${channel}`
             );
           }
 
