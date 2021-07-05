@@ -42,10 +42,10 @@ const getScoresCommand: Command = {
           });
 
           if (!Object.keys(scoreMapping).length) {
-            message.channel.send(
+            return message.channel.send(
               `There are no messages with any of the set reactions (${Array.from(
                 savedScores.keys()
-              ).join(' ')}() on channel ${channel.name}`
+              ).join(', ')}) on channel #${channel}`
             );
           }
 
