@@ -41,6 +41,14 @@ const getScoresCommand: Command = {
             });
           });
 
+          if (!Object.keys(scoreMapping).length) {
+            message.channel.send(
+              `There are no messages with any of the set reactions (${Array.from(
+                savedScores.keys()
+              ).join(' ')}() on channel ${channel.name}`
+            );
+          }
+
           const scoreTable = Object.entries(scoreMapping)
             .sort(([, a], [, b]) => {
               return a - b;
@@ -50,7 +58,8 @@ const getScoresCommand: Command = {
             .join('\n');
 
           const channelScore = Object.values(scoreMapping).reduce(
-            (total, score) => total + score
+            (total, score) => total + score,
+            0
           );
 
           message.channel.send(
