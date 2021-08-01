@@ -1,12 +1,8 @@
 import { chunk } from 'lodash';
+import { ServerConfigModel } from '../db/server-scoremojis';
 import { clearArgs, ADMIN_ONLY_MESSAGE } from '../utils';
 
-import { Command } from './index.types';
-
-type EmojiScorePair = Map<string, number>;
-
-// @TODO: Probably use some real DB or cache or whatever
-export let savedScores: EmojiScorePair = new Map([]);
+import { Command, Scoremoji } from './index.types';
 
 const EMOJI_REGEX = /\p{Emoji}/u;
 
@@ -16,7 +12,7 @@ const setScoresCommand: Command = {
   handler: (args, message) => {
     if (message.member?.hasPermission(['ADMINISTRATOR'])) {
       const clearedArgs = clearArgs(args);
-      if (clearedArgs.length % 2 !== 0)
+      if (clearedArgs.length % 2 !== 0 || clearedArgs.length === 0)
         return message.reply(
           'Invalid number of arguments, please check your emoji-core pairs.'
         );
@@ -40,25 +36,42 @@ const setScoresCommand: Command = {
           );
       }
 
-      const emojiScorePair: [string, number][] = pairedArgs.map(
-        ([emoji, score]) => {
-          const cleanedCustomEmoji = emoji.includes('<:')
-            ? emoji.replace('<:', '').replace('>', '').split(':')[1]
-            : emoji;
+      const scoremojis: Scoremoji[] = pairedArgs.map(([emoji, score]) => {
+        const cleanedCustomEmoji = emoji.includes('<:')
+          ? emoji.replace('<:', '').replace('>', '').split(':')[1]
+          : emoji;
 
-          return [cleanedCustomEmoji, parseFloat(score)];
+        return [cleanedCustomEmoji, parseFloat(score)];
+      });
+
+      const serverId = message.guild?.id;
+      if (!serverId) throw new Error('Server ID not available');
+
+      ServerConfigModel.findByIdAndUpdate(
+        serverId,
+        {
+          scoremojis,
+        },
+        {
+          useFindAndModify: false,
+          upsert: true,
         }
-      );
-
-      savedScores = new Map(emojiScorePair);
-
-      return message.channel.send(
-        'Successfully saved scoremojis\n'.concat(
-          pairedArgs
-            .map(([emoji, score]) => `${emoji} - ${score} points`)
-            .join('\n')
+      )
+        .then(() =>
+          message.channel.send(
+            'Successfully saved scoremojis\n'.concat(
+              pairedArgs
+                .map(([emoji, score]) => `${emoji} - ${score} points`)
+                .join('\n')
+            )
+          )
         )
-      );
+        .catch((error) => {
+          console.log(error);
+          message.channel.send(
+            'There was an unexpected error. Try again later on :('
+          );
+        });
     } else {
       message.reply(ADMIN_ONLY_MESSAGE);
     }

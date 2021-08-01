@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+mongoose.set('useFindAndModify', false);
+
 export const connectToDatabase = async (): Promise<void> => {
   const dbUri = process.env.MONGODB_URI;
   if (!dbUri) {
@@ -12,7 +14,7 @@ export const connectToDatabase = async (): Promise<void> => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('Connected to the database');
+    console.log('Connected to a database');
   } catch (error) {
     console.log(error);
     throw new Error('Error connecting with database');

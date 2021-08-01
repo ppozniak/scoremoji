@@ -13,3 +13,5 @@ export type CommandHandler = (
 ) => void;
 
 export type NormalizedCommands = Record<string, Omit<Command, 'command'>>;
+
+export type Scoremoji = [string, number];
