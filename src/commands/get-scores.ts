@@ -54,10 +54,10 @@ const getScoresCommand: Command = {
           });
 
           if (!Object.keys(scoreMapping).length) {
+            const scoremojiKeys = Array.from(scoremojisMap.keys()).join(', ');
+
             return message.channel.send(
-              `There are no messages with any of the scoremojis. Server's current scoremojis: (${Array.from(
-                scoremojisMap.keys()
-              ).join(', ')}) on channel ${channel}`
+              `${channel}: There are no messages with any of the saved scoremojis (${scoremojiKeys})`
             );
           }
 
@@ -66,7 +66,10 @@ const getScoresCommand: Command = {
               return a - b;
             })
             .reverse()
-            .map(([user, score]) => `${user} - ${score} points`)
+            .map(
+              ([user, score]) =>
+                `${user} - ${score} ${score === 1 ? 'point' : 'points'}`
+            )
             .join('\n');
 
           const channelScore = Object.values(scoreMapping).reduce(
