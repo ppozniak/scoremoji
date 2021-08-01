@@ -1,11 +1,12 @@
 import { uniq } from 'lodash';
 import { ADMIN_ONLY_MESSAGE, fetchAllMessages } from '../utils';
 import { Command } from './index.types';
-import { savedScores } from './set-scores'; // @TODO: naturally use DB for that...
+import { savedScores } from './set-scoremojis'; // @TODO: naturally use DB for that...
 
 const getScoresCommand: Command = {
   command: 'get-scores',
-  description: 'Get scoremojis from selected channels',
+  description:
+    "Count scores based on server's scoremojis from provided channels",
   handler: async (args, message) => {
     if (message.member?.hasPermission(['ADMINISTRATOR'])) {
       const channels = uniq(Array.from(message.mentions.channels));
@@ -43,7 +44,7 @@ const getScoresCommand: Command = {
 
           if (!Object.keys(scoreMapping).length) {
             return message.channel.send(
-              `There are no messages with any of the set reactions (${Array.from(
+              `There are no messages with any of the scoremojis. Server's current scoremojis: (${Array.from(
                 savedScores.keys()
               ).join(', ')}) on channel ${channel}`
             );
@@ -65,7 +66,7 @@ const getScoresCommand: Command = {
           message.channel.send(
             [
               '```',
-              `Scoremojis for #${channel.name} (${messages.length} messages):`,
+              `Scores for #${channel.name} (${messages.length} messages):`,
               '----------------------------------------------',
               scoreTable,
               '',
